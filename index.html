@@ -208,6 +208,37 @@
     .appt-note { font-size: 13px; color: var(--text2); margin-top: 6px; font-style: italic; }
     .appt-delete { background: none; border: none; color: var(--text3); font-size: 18px; cursor: pointer; padding: 4px; }
 
+    .add-job-btn {
+      background: var(--blue); color: #fff; border: none;
+      border-radius: var(--radius); padding: 16px; font-size: 16px;
+      font-weight: 600; cursor: pointer; width: 100%;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+
+    .photo-upload {
+      border: 2px dashed var(--border); border-radius: var(--radius);
+      padding: 28px 16px; text-align: center; cursor: pointer;
+      background: var(--bg); transition: border-color 0.2s;
+    }
+    .photo-upload:active { border-color: var(--blue); }
+    .photo-upload-icon { font-size: 32px; margin-bottom: 8px; }
+    .photo-upload-label { font-size: 14px; font-weight: 500; color: var(--text2); }
+    .photo-upload-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+    .photo-preview { width: 100%; border-radius: var(--radius); max-height: 200px; object-fit: cover; display: none; }
+
+    .job-card {
+      background: var(--surface); border-radius: var(--radius);
+      border: 1px solid var(--border); overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .job-photo { width: 100%; height: 140px; object-fit: cover; display: block; }
+    .job-photo-placeholder { width: 100%; height: 140px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 32px; }
+    .job-body { padding: 14px 16px; }
+    .job-name { font-size: 16px; font-weight: 600; }
+    .job-meta { font-size: 13px; color: var(--text2); margin-top: 3px; }
+    .job-row { display: flex; justify-content: space-between; align-items: center; }
+    .job-date-badge { background: var(--green-light); color: var(--green); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+
     /* ── MODAL ── */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.4);
@@ -311,7 +342,10 @@
 </div>
 
 <div class="view" id="sched-view">
-  <div class="sched-wrap" id="sched-list"></div>
+  <div class="sched-wrap">
+    <button class="add-job-btn" onclick="openJobModal()">+ Add Job</button>
+    <div id="sched-list"></div>
+  </div>
 </div>
 
 <!-- BOTTOM NAV -->
@@ -345,6 +379,33 @@
     <div class="field"><label>Notes</label><textarea id="bk-notes" placeholder="Gate code, special instructions..."></textarea></div>
     <button class="modal-btn" onclick="saveBooking()">Save Appointment</button>
     <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+
+<!-- JOB MODAL -->
+<div class="modal-overlay" id="job-modal">
+  <div class="modal" style="max-height:90vh;overflow-y:auto">
+    <div class="modal-handle"></div>
+    <div class="modal-title">New Job</div>
+    <div class="field"><label>Homeowner Name</label><input id="jb-name" type="text" placeholder="John Smith"/></div>
+    <div class="field"><label>Phone</label><input id="jb-phone" type="tel" placeholder="514-555-0000"/></div>
+    <div class="field"><label>Address</label><input id="jb-address" type="text" placeholder="123 Main St"/></div>
+    <div class="field"><label>Date of Service</label><input id="jb-date" type="date"/></div>
+    <div class="field"><label>Time</label><input id="jb-time" type="time"/></div>
+    <div class="field"><label>Price ($)</label><input id="jb-price" type="number" placeholder="275"/></div>
+    <div class="field"><label>House Photo</label>
+      <input type="file" id="jb-photo-input" accept="image/*" capture="environment" style="display:none" onchange="previewPhoto(this)"/>
+      <div class="photo-upload" onclick="document.getElementById('jb-photo-input').click()">
+        <div class="photo-upload-icon">📷</div>
+        <div class="photo-upload-label">Take or Upload Photo</div>
+        <div class="photo-upload-sub">Tap to use camera or choose from library</div>
+      </div>
+      <img id="jb-photo-preview" class="photo-preview" style="margin-top:10px"/>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="jb-notes" placeholder="Gate code, dogs, special access..."></textarea></div>
+    <button class="modal-btn" onclick="saveJob()">Save Job</button>
+    <button class="modal-cancel" onclick="closeJobModal()">Cancel</button>
   </div>
 </div>
 
@@ -633,6 +694,83 @@ function showToast(msg) {
   el.textContent = msg; el.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+
+// ── JOBS ──
+let jobs = [];
+
+function openJobModal() {
+  document.getElementById('jb-name').value = '';
+  document.getElementById('jb-phone').value = '';
+  document.getElementById('jb-address').value = '';
+  document.getElementById('jb-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('jb-time').value = '09:00';
+  document.getElementById('jb-price').value = '';
+  document.getElementById('jb-notes').value = '';
+  document.getElementById('jb-photo-preview').style.display = 'none';
+  document.getElementById('jb-photo-preview').src = '';
+  document.getElementById('jb-photo-input').value = '';
+  document.getElementById('job-modal').classList.add('open');
+}
+function closeJobModal() { document.getElementById('job-modal').classList.remove('open'); }
+
+function previewPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('jb-photo-preview');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    document.querySelector('.photo-upload').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveJob() {
+  const name = document.getElementById('jb-name').value.trim();
+  const phone = document.getElementById('jb-phone').value.trim();
+  const address = document.getElementById('jb-address').value.trim();
+  const date = document.getElementById('jb-date').value;
+  const time = document.getElementById('jb-time').value;
+  const price = document.getElementById('jb-price').value;
+  const notes = document.getElementById('jb-notes').value.trim();
+  const photoSrc = document.getElementById('jb-photo-preview').src;
+  if (!name || !address || !date) { showToast('Fill in name, address and date'); return; }
+  const job = { name, phone, address, date, time, price, notes, photo: photoSrc && photoSrc !== window.location.href ? photoSrc : null, created_at: new Date().toISOString() };
+  jobs.unshift(job);
+  renderJobs();
+  closeJobModal();
+  showToast('Job saved');
+}
+
+function renderJobs() {
+  const el = document.getElementById('sched-list');
+  if (!jobs.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No jobs yet</div><div class="empty-sub">Tap Add Job to log your first booking</div></div>';
+    return;
+  }
+  el.innerHTML = jobs.map((j, i) => {
+    const [h, m] = j.time ? j.time.split(':') : ['9','00'];
+    const hr = parseInt(h);
+    const ampm = hr >= 12 ? 'PM' : 'AM';
+    const disp = (hr > 12 ? hr-12 : hr || 12) + ':' + m;
+    const dateStr = new Date(j.date + 'T12:00').toLocaleDateString('en-CA', {weekday:'short', month:'short', day:'numeric'});
+    return `<div class="job-card" style="margin-bottom:10px">
+      ${j.photo ? `<img class="job-photo" src="${j.photo}"/>` : '<div class="job-photo-placeholder">🏠</div>'}
+      <div class="job-body">
+        <div class="job-row">
+          <div class="job-name">${j.name}</div>
+          ${j.price ? `<div class="job-date-badge">\$${j.price}</div>` : ''}
+        </div>
+        <div class="job-meta">${j.address}</div>
+        ${j.phone ? `<div class="job-meta">📞 ${j.phone}</div>` : ''}
+        <div class="job-meta" style="margin-top:6px">📅 ${dateStr} at ${disp} ${ampm}</div>
+        ${j.notes ? `<div class="job-meta" style="margin-top:4px;font-style:italic">${j.notes}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // ── START ──
