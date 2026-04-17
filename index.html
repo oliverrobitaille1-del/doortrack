@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>DoorTrack</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F2F2F7;
+      --surface: #FFFFFF;
+      --surface2: #F2F2F7;
+      --border: rgba(60,60,67,0.12);
+      --text: #1C1C1E;
+      --text2: #6C6C70;
+      --text3: #AEAEB2;
+      --blue: #007AFF;
+      --blue-light: #E8F2FF;
+      --green: #34C759;
+      --green-light: #E8F8ED;
+      --red: #FF3B30;
+      --red-light: #FFECEB;
+      --orange: #FF9500;
+      --orange-light: #FFF3E0;
+      --purple: #AF52DE;
+      --purple-light: #F5EEFF;
+      --radius: 14px;
+      --radius-sm: 10px;
+      --shadow: 0 2px 20px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+      --nav-h: 64px;
+      --header-h: 56px;
+    }
+
+    html, body { height: 100%; font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; overflow: hidden; }
+
+    /* ── HEADER ── */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+      background: rgba(242,242,247,0.85);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; z-index: 1000;
+    }
+    .header-title { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
+    .header-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
+    .header-stat {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--surface); border-radius: 20px;
+      padding: 6px 12px; border: 1px solid var(--border);
+    }
+    .header-stat-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+    .header-stat-num { font-size: 13px; font-weight: 600; }
+    .header-stat-label { font-size: 12px; color: var(--text2); }
+
+    /* ── VIEWS ── */
+    .view { position: fixed; top: var(--header-h); left: 0; right: 0; bottom: var(--nav-h); overflow-y: auto; display: none; }
+    .view.active { display: block; }
+    #map-view { overflow: hidden; }
+
+    /* ── MAP ── */
+    #map { width: 100%; height: 100%; }
+
+    /* mode bar */
+    .mode-bar {
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+      display: flex; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+      border-radius: 22px; padding: 4px; gap: 2px;
+      border: 1px solid var(--border); box-shadow: var(--shadow); z-index: 500;
+      white-space: nowrap;
+    }
+    .mode-btn {
+      padding: 7px 14px; border-radius: 18px; border: none; background: none;
+      font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .mode-btn.active { background: var(--text); color: #fff; }
+    .mode-btn.na.active { background: var(--blue); }
+    .mode-btn.no.active { background: var(--red); }
+    .mode-btn.booked.active { background: var(--green); }
+    .mode-btn.back.active { background: var(--orange); }
+
+    /* locate btn */
+    .locate-btn {
+      position: absolute; bottom: 20px; right: 16px;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--surface); border: 1px solid var(--border);
+      box-shadow: var(--shadow); z-index: 500; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+
+    /* ── BOTTOM NAV ── */
+    .nav {
+      position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-h);
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      display: flex; z-index: 1000;
+    }
+    .nav-btn {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 3px; background: none; border: none; cursor: pointer; color: var(--text3);
+      font-size: 10px; font-weight: 500; transition: color 0.15s; padding-bottom: 4px;
+    }
+    .nav-btn svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .nav-btn.active { color: var(--blue); }
+
+    /* ── PINS LIST ── */
+    .list-wrap { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .section-label { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin: 8px 4px 4px; }
+
+    .pin-card {
+      background: var(--surface); border-radius: var(--radius);
+      border: 1px solid var(--border); overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .pin-row {
+      display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+    }
+    .pin-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .pin-icon.na { background: var(--blue-light); }
+    .pin-icon.no { background: var(--red-light); }
+    .pin-icon.booked { background: var(--green-light); }
+    .pin-icon.back { background: var(--orange-light); }
+    .pin-info { flex: 1; min-width: 0; }
+    .pin-title { font-size: 15px; font-weight: 500; }
+    .pin-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
+    .pin-badge {
+      font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px;
+      flex-shrink: 0;
+    }
+    .pin-badge.na { background: var(--blue-light); color: var(--blue); }
+    .pin-badge.no { background: var(--red-light); color: var(--red); }
+    .pin-badge.booked { background: var(--green-light); color: var(--green); }
+    .pin-badge.back { background: var(--orange-light); color: var(--orange); }
+    .pin-note { font-size: 13px; color: var(--text2); padding: 0 16px 14px; border-top: 1px solid var(--border); padding-top: 10px; }
+    .pin-delete { background: none; border: none; padding: 8px; cursor: pointer; color: var(--text3); font-size: 18px; }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text2); }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-title { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .empty-sub { font-size: 14px; }
+
+    /* ── STATS VIEW ── */
+    .stats-wrap { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat-card {
+      background: var(--surface); border-radius: var(--radius);
+      border: 1px solid var(--border); padding: 18px 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .stat-num { font-size: 34px; font-weight: 700; letter-spacing: -1px; }
+    .stat-label { font-size: 13px; color: var(--text2); margin-top: 2px; }
+    .stat-card.blue .stat-num { color: var(--blue); }
+    .stat-card.green .stat-num { color: var(--green); }
+    .stat-card.red .stat-num { color: var(--red); }
+    .stat-card.orange .stat-num { color: var(--orange); }
+
+    .rate-card {
+      background: var(--surface); border-radius: var(--radius);
+      border: 1px solid var(--border); padding: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .rate-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+    .rate-bar-wrap { margin-bottom: 12px; }
+    .rate-bar-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+    .rate-bar-label span:first-child { color: var(--text2); }
+    .rate-bar-label span:last-child { font-weight: 600; }
+    .rate-bar-track { height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+    .rate-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+    .rate-bar-fill.blue { background: var(--blue); }
+    .rate-bar-fill.green { background: var(--green); }
+    .rate-bar-fill.red { background: var(--red); }
+    .rate-bar-fill.orange { background: var(--orange); }
+
+    .reset-btn {
+      background: var(--red-light); color: var(--red); border: none;
+      border-radius: var(--radius); padding: 16px; font-size: 15px;
+      font-weight: 600; cursor: pointer; width: 100%;
+    }
+
+    /* ── SCHEDULE VIEW ── */
+    .sched-wrap { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .appt-card {
+      background: var(--surface); border-radius: var(--radius);
+      border: 1px solid var(--border); padding: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      display: flex; gap: 14px; align-items: flex-start;
+    }
+    .appt-time-block {
+      text-align: center; min-width: 48px;
+      background: var(--green-light); border-radius: var(--radius-sm);
+      padding: 8px 6px;
+    }
+    .appt-time { font-size: 15px; font-weight: 700; color: var(--green); }
+    .appt-ampm { font-size: 10px; color: var(--green); font-weight: 600; margin-top: 1px; }
+    .appt-info { flex: 1; }
+    .appt-address { font-size: 15px; font-weight: 500; }
+    .appt-date { font-size: 13px; color: var(--text2); margin-top: 3px; }
+    .appt-note { font-size: 13px; color: var(--text2); margin-top: 6px; font-style: italic; }
+    .appt-delete { background: none; border: none; color: var(--text3); font-size: 18px; cursor: pointer; padding: 4px; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(4px); z-index: 2000;
+      display: none; align-items: flex-end;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface); border-radius: 20px 20px 0 0;
+      width: 100%; padding: 12px 20px 40px;
+      box-shadow: 0 -4px 40px rgba(0,0,0,0.15);
+      animation: slideUp 0.25s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+    .field { margin-bottom: 16px; }
+    .field label { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.4px; display: block; margin-bottom: 8px; }
+    .field input, .field textarea, .field select {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 13px 14px;
+      font-size: 16px; font-family: inherit; color: var(--text);
+      outline: none; appearance: none;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--blue); background: #fff; }
+    .field textarea { resize: none; min-height: 80px; }
+    .modal-btn {
+      width: 100%; padding: 16px; border: none; border-radius: var(--radius);
+      font-size: 17px; font-weight: 600; cursor: pointer;
+      background: var(--blue); color: #fff; margin-top: 4px;
+    }
+    .modal-cancel {
+      width: 100%; padding: 14px; border: none; background: none;
+      font-size: 17px; color: var(--text2); cursor: pointer; margin-top: 8px;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: calc(var(--nav-h) + 12px); left: 50%; transform: translateX(-50%);
+      background: var(--text); color: #fff; padding: 10px 20px; border-radius: 20px;
+      font-size: 14px; font-weight: 500; z-index: 3000; pointer-events: none;
+      opacity: 0; transition: opacity 0.2s; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; }
+
+    /* leaflet overrides */
+    .leaflet-container { background: #E8EDF2; }
+    .leaflet-control-zoom { border: 1px solid var(--border) !important; border-radius: var(--radius-sm) !important; box-shadow: var(--shadow) !important; }
+    .leaflet-control-zoom a { color: var(--text) !important; font-weight: 600 !important; }
+    .leaflet-popup-content-wrapper { border-radius: var(--radius) !important; box-shadow: var(--shadow-lg) !important; border: 1px solid var(--border) !important; }
+    .leaflet-popup-tip { display: none; }
+    .leaflet-popup-content { margin: 0 !important; }
+
+    .popup-inner { padding: 14px; min-width: 200px; }
+    .popup-addr { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+    .popup-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .popup-btn {
+      padding: 7px 12px; border-radius: 8px; border: none;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    .popup-btn.na { background: var(--blue-light); color: var(--blue); }
+    .popup-btn.no { background: var(--red-light); color: var(--red); }
+    .popup-btn.booked { background: var(--green-light); color: var(--green); }
+    .popup-btn.back { background: var(--orange-light); color: var(--orange); }
+    .popup-del { width: 100%; padding: 8px; background: var(--red-light); color: var(--red); border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="header-title">DoorTrack</div>
+    <div class="header-sub">Window Cleaning</div>
+  </div>
+  <div class="header-stat">
+    <div class="header-stat-dot"></div>
+    <span class="header-stat-num" id="hdr-count">0</span>
+    <span class="header-stat-label">pins today</span>
+  </div>
+</div>
+
+<!-- VIEWS -->
+<div class="view active" id="map-view">
+  <div id="map"></div>
+  <div class="mode-bar">
+    <button class="mode-btn na active" data-mode="na" onclick="setMode('na')">No Answer</button>
+    <button class="mode-btn no" data-mode="no" onclick="setMode('no')">Not Int.</button>
+    <button class="mode-btn booked" data-mode="booked" onclick="setMode('booked')">Booked</button>
+    <button class="mode-btn back" data-mode="back" onclick="setMode('back')">Come Back</button>
+  </div>
+  <button class="locate-btn" onclick="locateMe()">📍</button>
+</div>
+
+<div class="view" id="pins-view">
+  <div class="list-wrap" id="pins-list"></div>
+</div>
+
+<div class="view" id="stats-view">
+  <div class="stats-wrap" id="stats-content"></div>
+</div>
+
+<div class="view" id="sched-view">
+  <div class="sched-wrap" id="sched-list"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="showView('map')">
+    <svg viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+    Map
+  </button>
+  <button class="nav-btn" onclick="showView('pins')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+    Pins
+  </button>
+  <button class="nav-btn" onclick="showView('stats')">
+    <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+    Stats
+  </button>
+  <button class="nav-btn" onclick="showView('sched')">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Schedule
+  </button>
+</nav>
+
+<!-- BOOKING MODAL -->
+<div class="modal-overlay" id="book-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Book Appointment</div>
+    <div class="field"><label>Address</label><input id="bk-address" type="text" placeholder="123 Main St"/></div>
+    <div class="field"><label>Date</label><input id="bk-date" type="date"/></div>
+    <div class="field"><label>Time</label><input id="bk-time" type="time"/></div>
+    <div class="field"><label>Notes</label><textarea id="bk-notes" placeholder="Gate code, special instructions..."></textarea></div>
+    <button class="modal-btn" onclick="saveBooking()">Save Appointment</button>
+    <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://weskfqquvvaxjgsdqgal.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc2tmcXF1dnZheGpnc2RxZ2FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDA4MzQsImV4cCI6MjA5MTkxNjgzNH0.u6FwnI0XLA7QPrHAAaaT-sTNNH0U2zZwwILumovVKX0';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const STATUS = {
+  na:     { label: 'No Answer',   emoji: '🔵', color: '#007AFF' },
+  no:     { label: 'Not Int.',    emoji: '🔴', color: '#FF3B30' },
+  booked: { label: 'Booked',      emoji: '🟢', color: '#34C759' },
+  back:   { label: 'Come Back',   emoji: '🟠', color: '#FF9500' },
+};
+
+let map, pins = [], appointments = [], currentMode = 'na', pendingPin = null;
+
+// ── INIT MAP ──
+function initMap() {
+  map = L.map('map', { zoomControl: true }).setView([45.5017, -73.5673], 13);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '©OSM ©Carto', maxZoom: 19
+  }).addTo(map);
+  map.on('click', onMapClick);
+  loadPins();
+  loadAppointments();
+}
+
+function makeIcon(status) {
+  const s = STATUS[status];
+  return L.divIcon({
+    html: `<div style="
+      width:32px;height:32px;border-radius:50%;
+      background:${s.color};color:#fff;
+      display:flex;align-items:center;justify-content:center;
+      font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.25);
+      border:2px solid #fff;
+    ">${s.emoji}</div>`,
+    className: '', iconSize: [32,32], iconAnchor: [16,16], popupAnchor: [0,-18]
+  });
+}
+
+function onMapClick(e) {
+  const { lat, lng } = e.latlng;
+  addPin(lat, lng, currentMode);
+}
+
+async function addPin(lat, lng, status, note='') {
+  const { data, error } = await sb.from('pins').insert({ lat, lng, status, note }).select().single();
+  if (error) { showToast('Error saving pin'); return; }
+  pins.push(data);
+  renderMarker(data);
+  updateHeader();
+  renderPinsList();
+  renderStats();
+  showToast(STATUS[status].emoji + ' ' + STATUS[status].label);
+  if (status === 'booked') openBookModal(lat, lng);
+}
+
+function renderMarker(pin) {
+  const marker = L.marker([pin.lat, pin.lng], { icon: makeIcon(pin.status) }).addTo(map);
+  marker.pinId = pin.id;
+  marker.on('click', () => showPinPopup(pin, marker));
+  pin._marker = marker;
+}
+
+function showPinPopup(pin, marker) {
+  const addr = `${pin.lat.toFixed(5)}, ${pin.lng.toFixed(5)}`;
+  const btns = Object.entries(STATUS).map(([k,v]) =>
+    `<button class="popup-btn ${k}" onclick="changeStatus('${pin.id}','${k}')">${v.emoji} ${v.label}</button>`
+  ).join('');
+  const content = `
+    <div class="popup-inner">
+      <div class="popup-addr">📍 ${addr}</div>
+      <div class="popup-btns">${btns}</div>
+      <button class="popup-del" onclick="deletePin('${pin.id}')">🗑 Remove Pin</button>
+    </div>`;
+  marker.bindPopup(content, { minWidth: 220 }).openPopup();
+}
+
+async function changeStatus(id, status) {
+  await sb.from('pins').update({ status }).eq('id', id);
+  const pin = pins.find(p => p.id === id);
+  if (pin) {
+    pin.status = status;
+    pin._marker.setIcon(makeIcon(status));
+    map.closePopup();
+    renderPinsList();
+    renderStats();
+    showToast('Updated to ' + STATUS[status].label);
+    if (status === 'booked') openBookModal(pin.lat, pin.lng);
+  }
+}
+
+async function deletePin(id) {
+  await sb.from('pins').delete().eq('id', id);
+  const idx = pins.findIndex(p => p.id === id);
+  if (idx !== -1) {
+    pins[idx]._marker.remove();
+    pins.splice(idx, 1);
+    map.closePopup();
+    renderPinsList();
+    renderStats();
+    updateHeader();
+    showToast('Pin removed');
+  }
+}
+
+async function loadPins() {
+  const { data } = await sb.from('pins').select('*').order('created_at', { ascending: false });
+  if (data) {
+    pins = data;
+    pins.forEach(renderMarker);
+    updateHeader();
+    renderPinsList();
+    renderStats();
+  }
+}
+
+// ── MODE ──
+function setMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.mode-btn[data-mode="${mode}"]`).classList.add('active');
+}
+
+// ── LOCATE ──
+function locateMe() {
+  navigator.geolocation.getCurrentPosition(pos => {
+    map.setView([pos.coords.latitude, pos.coords.longitude], 16);
+    showToast('📍 Located');
+  }, () => showToast('Location unavailable'));
+}
+
+// ── PINS LIST ──
+function renderPinsList() {
+  const el = document.getElementById('pins-list');
+  if (!pins.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📍</div><div class="empty-title">No pins yet</div><div class="empty-sub">Tap the map to drop your first pin</div></div>`;
+    return;
+  }
+  const groups = { booked: [], back: [], na: [], no: [] };
+  pins.forEach(p => groups[p.status]?.push(p));
+  let html = '';
+  const order = ['booked', 'back', 'na', 'no'];
+  order.forEach(s => {
+    if (!groups[s].length) return;
+    html += `<div class="section-label">${STATUS[s].emoji} ${STATUS[s].label} (${groups[s].length})</div>`;
+    groups[s].forEach(p => {
+      const time = new Date(p.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      html += `
+        <div class="pin-card">
+          <div class="pin-row">
+            <div class="pin-icon ${p.status}">${STATUS[p.status].emoji}</div>
+            <div class="pin-info">
+              <div class="pin-title">${p.lat.toFixed(4)}, ${p.lng.toFixed(4)}</div>
+              <div class="pin-meta">${time}</div>
+            </div>
+            <span class="pin-badge ${p.status}">${STATUS[p.status].label}</span>
+            <button class="pin-delete" onclick="deletePin('${p.id}')">×</button>
+          </div>
+          ${p.note ? `<div class="pin-note">${p.note}</div>` : ''}
+        </div>`;
+    });
+  });
+  el.innerHTML = html;
+}
+
+// ── STATS ──
+function renderStats() {
+  const total = pins.length;
+  const counts = { na: 0, no: 0, booked: 0, back: 0 };
+  pins.forEach(p => counts[p.status]++);
+  const rate = total ? Math.round((counts.booked / total) * 100) : 0;
+  const el = document.getElementById('stats-content');
+  el.innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-card blue"><div class="stat-num">${total}</div><div class="stat-label">Total Doors</div></div>
+      <div class="stat-card green"><div class="stat-num">${counts.booked}</div><div class="stat-label">Booked</div></div>
+      <div class="stat-card orange"><div class="stat-num">${counts.back}</div><div class="stat-label">Come Back</div></div>
+      <div class="stat-card red"><div class="stat-num">${counts.no}</div><div class="stat-label">Not Int.</div></div>
+    </div>
+    <div class="rate-card">
+      <div class="rate-title">Conversion Breakdown</div>
+      ${Object.entries(counts).map(([s,c]) => `
+        <div class="rate-bar-wrap">
+          <div class="rate-bar-label"><span>${STATUS[s].emoji} ${STATUS[s].label}</span><span>${total ? Math.round(c/total*100) : 0}% (${c})</span></div>
+          <div class="rate-bar-track"><div class="rate-bar-fill ${s === 'na' ? 'blue' : s === 'no' ? 'red' : s === 'booked' ? 'green' : 'orange'}" style="width:${total ? c/total*100 : 0}%"></div></div>
+        </div>`).join('')}
+    </div>
+    <button class="reset-btn" onclick="confirmReset()">🗑 Clear All Pins</button>
+  `;
+}
+
+async function confirmReset() {
+  if (!confirm('Clear all pins? This cannot be undone.')) return;
+  await sb.from('pins').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  pins.forEach(p => p._marker?.remove());
+  pins = [];
+  updateHeader(); renderPinsList(); renderStats();
+  showToast('All pins cleared');
+}
+
+// ── SCHEDULE ──
+async function loadAppointments() {
+  const { data } = await sb.from('appointments').select('*').order('date').order('time');
+  if (data) { appointments = data; renderSchedule(); }
+}
+
+function renderSchedule() {
+  const el = document.getElementById('sched-list');
+  if (!appointments.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">No appointments</div><div class="empty-sub">Book a door from the map</div></div>`;
+    return;
+  }
+  el.innerHTML = appointments.map(a => {
+    const [h, m] = a.time.split(':');
+    const hr = parseInt(h);
+    const ampm = hr >= 12 ? 'PM' : 'AM';
+    const disp = `${hr > 12 ? hr-12 : hr || 12}:${m}`;
+    return `
+      <div class="appt-card">
+        <div class="appt-time-block"><div class="appt-time">${disp}</div><div class="appt-ampm">${ampm}</div></div>
+        <div class="appt-info">
+          <div class="appt-address">${a.address}</div>
+          <div class="appt-date">${new Date(a.date+'T12:00').toLocaleDateString('en-CA',{weekday:'long',month:'long',day:'numeric'})}</div>
+          ${a.notes ? `<div class="appt-note">${a.notes}</div>` : ''}
+        </div>
+        <button class="appt-delete" onclick="deleteAppt('${a.id}')">×</button>
+      </div>`;
+  }).join('');
+}
+
+let bookingLat = null, bookingLng = null;
+function openBookModal(lat, lng) {
+  bookingLat = lat; bookingLng = lng;
+  document.getElementById('bk-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('bk-time').value = '10:00';
+  document.getElementById('bk-address').value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+  document.getElementById('bk-notes').value = '';
+  document.getElementById('book-modal').classList.add('open');
+}
+function closeModal() { document.getElementById('book-modal').classList.remove('open'); }
+
+async function saveBooking() {
+  const address = document.getElementById('bk-address').value.trim();
+  const date = document.getElementById('bk-date').value;
+  const time = document.getElementById('bk-time').value;
+  const notes = document.getElementById('bk-notes').value.trim();
+  if (!address || !date || !time) { showToast('Fill in all fields'); return; }
+  const { data } = await sb.from('appointments').insert({ address, date, time, notes }).select().single();
+  if (data) { appointments.push(data); renderSchedule(); closeModal(); showToast('✅ Appointment saved'); }
+}
+
+async function deleteAppt(id) {
+  await sb.from('appointments').delete().eq('id', id);
+  appointments = appointments.filter(a => a.id !== id);
+  renderSchedule();
+  showToast('Appointment removed');
+}
+
+// ── NAVIGATION ──
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(name + '-view').classList.add('active');
+  document.querySelectorAll('.nav-btn')[['map','pins','stats','sched'].indexOf(name)].classList.add('active');
+  if (name === 'map') setTimeout(() => map.invalidateSize(), 50);
+}
+
+// ── HEADER ──
+function updateHeader() {
+  const today = new Date().toISOString().split('T')[0];
+  const todayCount = pins.filter(p => p.created_at?.startsWith(today)).length;
+  document.getElementById('hdr-count').textContent = todayCount;
+}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+// ── START ──
+window.addEventListener('load', initMap);
+</script>
+</body>
+</html>
