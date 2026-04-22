@@ -363,10 +363,18 @@ function setMode(mode) {
 }
 
 function locateMe() {
+  if (!navigator.geolocation) { showToast('Geolocation not supported'); return; }
+  showToast('Finding location...');
   navigator.geolocation.getCurrentPosition(function(pos) {
     map.setView([pos.coords.latitude, pos.coords.longitude], 18);
     showToast('📍 Located');
-  }, function() { showToast('Location unavailable'); });
+  }, function(err) {
+    if (err.code === 1) {
+      showToast('Enable location in Settings');
+    } else {
+      showToast('Location unavailable');
+    }
+  }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
 }
 
 // ── STATS ──
