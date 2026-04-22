@@ -9,170 +9,60 @@
   <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #F2F2F7;
-      --surface: #FFFFFF;
-      --surface2: #F2F2F7;
-      --border: rgba(60,60,67,0.12);
-      --text: #1C1C1E;
-      --text2: #6C6C70;
-      --text3: #AEAEB2;
-      --blue: #007AFF;
-      --blue-light: #E8F2FF;
-      --green: #34C759;
-      --green-light: #E8F8ED;
-      --red: #FF3B30;
-      --red-light: #FFECEB;
-      --orange: #FF9500;
-      --orange-light: #FFF3E0;
-      --purple: #AF52DE;
-      --purple-light: #F5EEFF;
-      --radius: 14px;
-      --radius-sm: 10px;
-      --shadow: 0 2px 20px rgba(0,0,0,0.08);
-      --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
-      --nav-h: 64px;
-      --header-h: 56px;
+      --bg: #F2F2F7; --surface: #FFFFFF; --border: rgba(60,60,67,0.12);
+      --text: #1C1C1E; --text2: #6C6C70; --text3: #AEAEB2;
+      --blue: #007AFF; --blue-light: #E8F2FF;
+      --green: #34C759; --green-light: #E8F8ED;
+      --red: #FF3B30; --red-light: #FFECEB;
+      --orange: #FF9500; --orange-light: #FFF3E0;
+      --darkred: #8B0000; --darkred-light: #FFE0E0;
+      --radius: 14px; --radius-sm: 10px;
+      --shadow: 0 2px 20px rgba(0,0,0,0.08); --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+      --nav-h: 64px; --header-h: 56px;
     }
-
-    html, body { height: 100%; font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; overflow: hidden; }
-
-    /* ── HEADER ── */
-    .header {
-      position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
-      background: rgba(242,242,247,0.85);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 20px; z-index: 1000;
-    }
-    .header-title { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
+    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; overflow: hidden; }
+    .header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-h); background: rgba(242,242,247,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000; }
+    .header-title { font-size: 17px; font-weight: 600; }
     .header-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
-    .header-stat {
-      display: flex; align-items: center; gap: 6px;
-      background: var(--surface); border-radius: 20px;
-      padding: 6px 12px; border: 1px solid var(--border);
-    }
+    .header-stat { display: flex; align-items: center; gap: 6px; background: var(--surface); border-radius: 20px; padding: 6px 12px; border: 1px solid var(--border); }
     .header-stat-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
     .header-stat-num { font-size: 13px; font-weight: 600; }
     .header-stat-label { font-size: 12px; color: var(--text2); }
-
-    /* ── VIEWS ── */
     .view { position: fixed; top: var(--header-h); left: 0; right: 0; bottom: var(--nav-h); overflow-y: auto; display: none; }
     .view.active { display: block; }
     #map-view { overflow: hidden; }
-
-    /* ── MAP ── */
     #map { width: 100%; height: 100%; }
-
-    /* mode bar */
-    .mode-bar {
-      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
-      display: flex; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
-      border-radius: 22px; padding: 4px; gap: 2px;
-      border: 1px solid var(--border); box-shadow: var(--shadow); z-index: 500;
-      white-space: nowrap;
-    }
-    .mode-btn {
-      padding: 7px 14px; border-radius: 18px; border: none; background: none;
-      font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer;
-      transition: all 0.2s; white-space: nowrap;
-    }
+    .mode-bar { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); display: flex; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-radius: 22px; padding: 4px; gap: 2px; border: 1px solid var(--border); box-shadow: var(--shadow); z-index: 500; white-space: nowrap; }
+    .mode-btn { padding: 7px 11px; border-radius: 18px; border: none; background: none; font-size: 11px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all 0.2s; white-space: nowrap; }
     .mode-btn.active { background: var(--text); color: #fff; }
     .mode-btn.na.active { background: var(--blue); }
     .mode-btn.no.active { background: var(--red); }
     .mode-btn.booked.active { background: var(--green); }
     .mode-btn.back.active { background: var(--orange); }
-
-    /* locate btn */
-    .locate-btn {
-      position: absolute; bottom: 20px; right: 16px;
-      width: 44px; height: 44px; border-radius: 50%;
-      background: var(--surface); border: 1px solid var(--border);
-      box-shadow: var(--shadow); z-index: 500; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; font-size: 18px;
-    }
-
-    /* ── BOTTOM NAV ── */
-    .nav {
-      position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-h);
-      background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid var(--border);
-      display: flex; z-index: 1000;
-    }
-    .nav-btn {
-      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 3px; background: none; border: none; cursor: pointer; color: var(--text3);
-      font-size: 10px; font-weight: 500; transition: color 0.15s; padding-bottom: 4px;
-    }
+    .mode-btn.neverknock.active { background: var(--darkred); }
+    .locate-btn { position: absolute; bottom: 20px; right: 16px; width: 44px; height: 44px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow); z-index: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .nav { position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-h); background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; z-index: 1000; }
+    .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: none; border: none; cursor: pointer; color: var(--text3); font-size: 10px; font-weight: 500; transition: color 0.15s; padding-bottom: 4px; }
     .nav-btn svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.8; }
     .nav-btn.active { color: var(--blue); }
-
-    /* ── PINS LIST ── */
-    .list-wrap { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
-    .section-label { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin: 8px 4px 4px; }
-
-    .pin-card {
-      background: var(--surface); border-radius: var(--radius);
-      border: 1px solid var(--border); overflow: hidden;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-    }
-    .pin-row {
-      display: flex; align-items: center; gap: 12px; padding: 14px 16px;
-    }
-    .pin-icon {
-      width: 36px; height: 36px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; flex-shrink: 0;
-    }
-    .pin-icon.na { background: var(--blue-light); }
-    .pin-icon.no { background: var(--red-light); }
-    .pin-icon.booked { background: var(--green-light); }
-    .pin-icon.back { background: var(--orange-light); }
-    .pin-info { flex: 1; min-width: 0; }
-    .pin-title { font-size: 15px; font-weight: 500; }
-    .pin-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
-    .pin-badge {
-      font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px;
-      flex-shrink: 0;
-    }
-    .pin-badge.na { background: var(--blue-light); color: var(--blue); }
-    .pin-badge.no { background: var(--red-light); color: var(--red); }
-    .pin-badge.booked { background: var(--green-light); color: var(--green); }
-    .pin-badge.back { background: var(--orange-light); color: var(--orange); }
-    .pin-note { font-size: 13px; color: var(--text2); padding: 0 16px 14px; border-top: 1px solid var(--border); padding-top: 10px; }
-    .pin-delete { background: none; border: none; padding: 8px; cursor: pointer; color: var(--text3); font-size: 18px; }
-
-    .empty-state { text-align: center; padding: 60px 20px; color: var(--text2); }
-    .empty-icon { font-size: 48px; margin-bottom: 12px; }
-    .empty-title { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
-    .empty-sub { font-size: 14px; }
-
-    /* ── STATS VIEW ── */
+    /* STATS */
     .stats-wrap { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .stats-tab-bar { display: flex; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
+    .stats-tab { flex: 1; padding: 12px 8px; border: none; background: none; font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all 0.2s; }
+    .stats-tab.active { background: var(--blue); color: #fff; font-weight: 600; }
     .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .stat-card {
-      background: var(--surface); border-radius: var(--radius);
-      border: 1px solid var(--border); padding: 18px 16px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-    }
+    .stat-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 18px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
     .stat-num { font-size: 34px; font-weight: 700; letter-spacing: -1px; }
     .stat-label { font-size: 13px; color: var(--text2); margin-top: 2px; }
     .stat-card.blue .stat-num { color: var(--blue); }
     .stat-card.green .stat-num { color: var(--green); }
     .stat-card.red .stat-num { color: var(--red); }
     .stat-card.orange .stat-num { color: var(--orange); }
-
-    .rate-card {
-      background: var(--surface); border-radius: var(--radius);
-      border: 1px solid var(--border); padding: 20px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-    }
+    .rate-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
     .rate-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
     .rate-bar-wrap { margin-bottom: 12px; }
     .rate-bar-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
-    .rate-bar-label span:first-child { color: var(--text2); }
     .rate-bar-label span:last-child { font-weight: 600; }
     .rate-bar-track { height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
     .rate-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
@@ -180,135 +70,89 @@
     .rate-bar-fill.green { background: var(--green); }
     .rate-bar-fill.red { background: var(--red); }
     .rate-bar-fill.orange { background: var(--orange); }
-
-    .reset-btn {
-      background: var(--red-light); color: var(--red); border: none;
-      border-radius: var(--radius); padding: 16px; font-size: 15px;
-      font-weight: 600; cursor: pointer; width: 100%;
-    }
-
-    /* ── SCHEDULE VIEW ── */
-    .sched-wrap { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
-    .appt-card {
-      background: var(--surface); border-radius: var(--radius);
-      border: 1px solid var(--border); padding: 16px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-      display: flex; gap: 14px; align-items: flex-start;
-    }
-    .appt-time-block {
-      text-align: center; min-width: 48px;
-      background: var(--green-light); border-radius: var(--radius-sm);
-      padding: 8px 6px;
-    }
-    .appt-time { font-size: 15px; font-weight: 700; color: var(--green); }
-    .appt-ampm { font-size: 10px; color: var(--green); font-weight: 600; margin-top: 1px; }
-    .appt-info { flex: 1; }
-    .appt-address { font-size: 15px; font-weight: 500; }
-    .appt-date { font-size: 13px; color: var(--text2); margin-top: 3px; }
-    .appt-note { font-size: 13px; color: var(--text2); margin-top: 6px; font-style: italic; }
-    .appt-delete { background: none; border: none; color: var(--text3); font-size: 18px; cursor: pointer; padding: 4px; }
-
-    .add-job-btn {
-      background: var(--blue); color: #fff; border: none;
-      border-radius: var(--radius); padding: 16px; font-size: 16px;
-      font-weight: 600; cursor: pointer; width: 100%;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
-
-    .photo-upload {
-      border: 2px dashed var(--border); border-radius: var(--radius);
-      padding: 28px 16px; text-align: center; cursor: pointer;
-      background: var(--bg); transition: border-color 0.2s;
-    }
-    .photo-upload:active { border-color: var(--blue); }
-    .photo-upload-icon { font-size: 32px; margin-bottom: 8px; }
-    .photo-upload-label { font-size: 14px; font-weight: 500; color: var(--text2); }
-    .photo-upload-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
-    .photo-preview { width: 100%; border-radius: var(--radius); max-height: 200px; object-fit: cover; display: none; }
-
-    .job-card {
-      background: var(--surface); border-radius: var(--radius);
-      border: 1px solid var(--border); overflow: hidden;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-    }
-    .job-photo { width: 100%; height: 140px; object-fit: cover; display: block; }
-    .job-photo-placeholder { width: 100%; height: 140px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 32px; }
-    .job-body { padding: 14px 16px; }
-    .job-name { font-size: 16px; font-weight: 600; }
-    .job-meta { font-size: 13px; color: var(--text2); margin-top: 3px; }
-    .job-row { display: flex; justify-content: space-between; align-items: center; }
-    .job-date-badge { background: var(--green-light); color: var(--green); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
-
-    /* ── MODAL ── */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(4px); z-index: 2000;
-      display: none; align-items: flex-end;
-    }
+    .reset-btn { background: var(--red-light); color: var(--red); border: none; border-radius: var(--radius); padding: 16px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; }
+    /* CALENDAR */
+    .cal-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; }
+    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .cal-title { font-size: 15px; font-weight: 600; }
+    .cal-nav { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text2); padding: 4px 10px; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .cal-dow { font-size: 10px; font-weight: 600; color: var(--text3); text-align: center; padding: 4px 0; }
+    .cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 50%; font-size: 13px; cursor: pointer; position: relative; }
+    .cal-day.empty { opacity: 0; pointer-events: none; }
+    .cal-day.today { background: var(--blue); color: #fff; font-weight: 700; }
+    .cal-day.selected:not(.today) { background: var(--blue-light); color: var(--blue); font-weight: 600; }
+    .cal-dot { display: none; width: 5px; height: 5px; border-radius: 50%; background: var(--green); position: absolute; bottom: 2px; }
+    .cal-day.today .cal-dot { background: #fff; }
+    .cal-day.has-data .cal-dot { display: block; }
+    /* JOBS */
+    .jobs-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 16px 0; }
+    .jobs-date-label { font-size: 18px; font-weight: 700; }
+    .jobs-date-sub { font-size: 13px; color: var(--text2); margin-top: 2px; }
+    .date-nav { display: flex; align-items: center; gap: 8px; }
+    .date-nav-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text2); padding: 4px; }
+    .add-job-btn { background: var(--blue); color: #fff; border: none; border-radius: var(--radius); padding: 16px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .jobs-timeline { padding: 16px; position: relative; }
+    .timeline-line { position: absolute; left: 52px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+    .timeline-slot { display: flex; gap: 0; margin-bottom: 8px; position: relative; align-items: flex-start; }
+    .timeline-time { width: 44px; font-size: 10px; font-weight: 600; color: var(--text3); text-align: right; padding-top: 12px; flex-shrink: 0; }
+    .timeline-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--border); position: relative; top: 12px; margin: 0 8px; flex-shrink: 0; z-index: 1; }
+    .timeline-dot.has-job { background: var(--green); }
+    .timeline-dot.completed { background: var(--blue); }
+    .job-block { flex: 1; background: var(--surface); border-radius: var(--radius-sm); border: 1px solid var(--border); padding: 12px 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); margin-bottom: 4px; }
+    .job-block.completed-job { opacity: 0.65; border-color: var(--blue); background: var(--blue-light); }
+    .job-block-name { font-size: 14px; font-weight: 600; }
+    .job-block-meta { font-size: 12px; color: var(--text2); margin-top: 3px; }
+    .job-block-price { font-size: 13px; font-weight: 700; color: var(--green); margin-top: 4px; }
+    .job-block-actions { display: flex; gap: 6px; margin-top: 10px; }
+    .job-complete-btn { flex: 1; padding: 8px; border: none; border-radius: 8px; background: var(--green); color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .job-complete-btn.done { background: var(--blue-light); color: var(--blue); }
+    .job-edit-btn { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: none; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text2); }
+    .job-del-btn { padding: 8px 12px; border: none; border-radius: 8px; background: var(--red-light); color: var(--red); font-size: 12px; font-weight: 600; cursor: pointer; }
+    .empty-slot { flex: 1; min-height: 20px; }
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: flex-end; }
     .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--surface); border-radius: 20px 20px 0 0;
-      width: 100%; padding: 12px 20px 40px;
-      box-shadow: 0 -4px 40px rgba(0,0,0,0.15);
-      animation: slideUp 0.25s ease;
-    }
+    .modal { background: var(--surface); border-radius: 20px 20px 0 0; width: 100%; padding: 12px 20px 40px; box-shadow: 0 -4px 40px rgba(0,0,0,0.15); animation: slideUp 0.25s ease; }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
     .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
     .field { margin-bottom: 16px; }
     .field label { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.4px; display: block; margin-bottom: 8px; }
-    .field input, .field textarea, .field select {
-      width: 100%; background: var(--bg); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 13px 14px;
-      font-size: 16px; font-family: inherit; color: var(--text);
-      outline: none; appearance: none;
-    }
-    .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--blue); background: #fff; }
+    .field input, .field textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 13px 14px; font-size: 16px; font-family: inherit; color: var(--text); outline: none; }
+    .field input:focus, .field textarea:focus { border-color: var(--blue); background: #fff; }
     .field textarea { resize: none; min-height: 80px; }
-    .modal-btn {
-      width: 100%; padding: 16px; border: none; border-radius: var(--radius);
-      font-size: 17px; font-weight: 600; cursor: pointer;
-      background: var(--blue); color: #fff; margin-top: 4px;
-    }
-    .modal-cancel {
-      width: 100%; padding: 14px; border: none; background: none;
-      font-size: 17px; color: var(--text2); cursor: pointer; margin-top: 8px;
-    }
-
-    /* ── TOAST ── */
-    .toast {
-      position: fixed; bottom: calc(var(--nav-h) + 12px); left: 50%; transform: translateX(-50%);
-      background: var(--text); color: #fff; padding: 10px 20px; border-radius: 20px;
-      font-size: 14px; font-weight: 500; z-index: 3000; pointer-events: none;
-      opacity: 0; transition: opacity 0.2s; white-space: nowrap;
-    }
+    .modal-btn { width: 100%; padding: 16px; border: none; border-radius: var(--radius); font-size: 17px; font-weight: 600; cursor: pointer; background: var(--blue); color: #fff; margin-top: 4px; }
+    .modal-cancel { width: 100%; padding: 14px; border: none; background: none; font-size: 17px; color: var(--text2); cursor: pointer; margin-top: 8px; }
+    .modal-delete { width: 100%; padding: 14px; border: none; background: var(--red-light); color: var(--red); font-size: 17px; font-weight: 600; cursor: pointer; border-radius: var(--radius); margin-top: 8px; }
+    /* TOAST */
+    .toast { position: fixed; bottom: calc(var(--nav-h) + 12px); left: 50%; transform: translateX(-50%); background: var(--text); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; font-weight: 500; z-index: 3000; pointer-events: none; opacity: 0; transition: opacity 0.2s; white-space: nowrap; }
     .toast.show { opacity: 1; }
-
-    /* leaflet overrides */
-    .leaflet-container { background: #E8EDF2; }
+    /* LEAFLET */
+    .leaflet-container { background: #1a1a1a; }
     .leaflet-control-zoom { border: 1px solid var(--border) !important; border-radius: var(--radius-sm) !important; box-shadow: var(--shadow) !important; }
-    .leaflet-control-zoom a { color: var(--text) !important; font-weight: 600 !important; }
+    .leaflet-control-zoom a { color: var(--text) !important; font-weight: 600 !important; background: #fff !important; }
     .leaflet-popup-content-wrapper { border-radius: var(--radius) !important; box-shadow: var(--shadow-lg) !important; border: 1px solid var(--border) !important; }
     .leaflet-popup-tip { display: none; }
     .leaflet-popup-content { margin: 0 !important; }
-
-    .popup-inner { padding: 14px; min-width: 200px; }
+    .popup-inner { padding: 14px; min-width: 220px; }
     .popup-addr { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
     .popup-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-    .popup-btn {
-      padding: 7px 12px; border-radius: 8px; border: none;
-      font-size: 12px; font-weight: 600; cursor: pointer;
-    }
+    .popup-btn { padding: 7px 10px; border-radius: 8px; border: none; font-size: 11px; font-weight: 600; cursor: pointer; }
     .popup-btn.na { background: var(--blue-light); color: var(--blue); }
     .popup-btn.no { background: var(--red-light); color: var(--red); }
     .popup-btn.booked { background: var(--green-light); color: var(--green); }
     .popup-btn.back { background: var(--orange-light); color: var(--orange); }
+    .popup-btn.neverknock { background: var(--darkred-light); color: var(--darkred); }
     .popup-del { width: 100%; padding: 8px; background: var(--red-light); color: var(--red); border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text2); }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-title { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .empty-sub { font-size: 14px; }
   </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <div>
     <div class="header-title">DoorTrack</div>
@@ -321,20 +165,16 @@
   </div>
 </div>
 
-<!-- VIEWS -->
 <div class="view active" id="map-view">
   <div id="map"></div>
   <div class="mode-bar">
     <button class="mode-btn na active" data-mode="na" onclick="setMode('na')">No Answer</button>
     <button class="mode-btn no" data-mode="no" onclick="setMode('no')">Not Int.</button>
-    <button class="mode-btn booked" data-mode="booked" onclick="setMode('booked')">Booked</button>
+    <button class="mode-btn booked" data-mode="booked" onclick="setMode('booked')">Booked ✅</button>
     <button class="mode-btn back" data-mode="back" onclick="setMode('back')">Come Back</button>
+    <button class="mode-btn neverknock" data-mode="neverknock" onclick="setMode('neverknock')">Never 🚫</button>
   </div>
   <button class="locate-btn" onclick="locateMe()">📍</button>
-</div>
-
-<div class="view" id="pins-view">
-  <div class="list-wrap" id="pins-list"></div>
 </div>
 
 <div class="view" id="stats-view">
@@ -342,21 +182,27 @@
 </div>
 
 <div class="view" id="sched-view">
-  <div class="sched-wrap">
-    <button class="add-job-btn" onclick="openJobModal()">+ Add Job</button>
+  <div class="jobs-header">
+    <div>
+      <div class="jobs-date-label" id="jobs-date-label">Today</div>
+      <div class="jobs-date-sub" id="jobs-date-sub"></div>
+    </div>
+    <div class="date-nav">
+      <button class="date-nav-btn" onclick="shiftJobsDate(-1)">‹</button>
+      <button class="date-nav-btn" onclick="shiftJobsDate(1)">›</button>
+      <button class="add-job-btn" style="padding:10px 16px;font-size:14px;width:auto" onclick="openJobModal(null)">+ Job</button>
+    </div>
+  </div>
+  <div class="jobs-timeline">
+    <div class="timeline-line"></div>
     <div id="sched-list"></div>
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
 <nav class="nav">
   <button class="nav-btn active" onclick="showView('map')">
     <svg viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
     Map
-  </button>
-  <button class="nav-btn" onclick="showView('pins')">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
-    Pins
   </button>
   <button class="nav-btn" onclick="showView('stats')">
     <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
@@ -364,7 +210,7 @@
   </button>
   <button class="nav-btn" onclick="showView('sched')">
     <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-    Schedule
+    Jobs
   </button>
 </nav>
 
@@ -378,34 +224,25 @@
     <div class="field"><label>Time</label><input id="bk-time" type="time"/></div>
     <div class="field"><label>Notes</label><textarea id="bk-notes" placeholder="Gate code, special instructions..."></textarea></div>
     <button class="modal-btn" onclick="saveBooking()">Save Appointment</button>
-    <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+    <button class="modal-cancel" onclick="closeModal('book-modal')">Cancel</button>
   </div>
 </div>
-
 
 <!-- JOB MODAL -->
 <div class="modal-overlay" id="job-modal">
   <div class="modal" style="max-height:90vh;overflow-y:auto">
     <div class="modal-handle"></div>
-    <div class="modal-title">New Job</div>
+    <div class="modal-title" id="job-modal-title">New Job</div>
     <div class="field"><label>Homeowner Name</label><input id="jb-name" type="text" placeholder="John Smith"/></div>
     <div class="field"><label>Phone</label><input id="jb-phone" type="tel" placeholder="514-555-0000"/></div>
     <div class="field"><label>Address</label><input id="jb-address" type="text" placeholder="123 Main St"/></div>
     <div class="field"><label>Date of Service</label><input id="jb-date" type="date"/></div>
     <div class="field"><label>Time</label><input id="jb-time" type="time"/></div>
     <div class="field"><label>Price ($)</label><input id="jb-price" type="number" placeholder="275"/></div>
-    <div class="field"><label>House Photo</label>
-      <input type="file" id="jb-photo-input" accept="image/*" capture="environment" style="display:none" onchange="previewPhoto(this)"/>
-      <div class="photo-upload" onclick="document.getElementById('jb-photo-input').click()">
-        <div class="photo-upload-icon">📷</div>
-        <div class="photo-upload-label">Take or Upload Photo</div>
-        <div class="photo-upload-sub">Tap to use camera or choose from library</div>
-      </div>
-      <img id="jb-photo-preview" class="photo-preview" style="margin-top:10px"/>
-    </div>
     <div class="field"><label>Notes</label><textarea id="jb-notes" placeholder="Gate code, dogs, special access..."></textarea></div>
     <button class="modal-btn" onclick="saveJob()">Save Job</button>
-    <button class="modal-cancel" onclick="closeJobModal()">Cancel</button>
+    <button class="modal-delete" id="jb-delete-btn" style="display:none" onclick="deleteCurrentJob()">Delete Job</button>
+    <button class="modal-cancel" onclick="closeModal('job-modal')">Cancel</button>
   </div>
 </div>
 
@@ -419,51 +256,52 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const STATUS = {
-  na:     { label: 'No Answer',   emoji: '🔵', color: '#007AFF' },
-  no:     { label: 'Not Int.',    emoji: '🔴', color: '#FF3B30' },
-  booked: { label: 'Booked',      emoji: '🟢', color: '#34C759' },
-  back:   { label: 'Come Back',   emoji: '🟠', color: '#FF9500' },
+  na:         { label: 'No Answer',   emoji: '🔵', color: '#007AFF' },
+  no:         { label: 'Not Int.',    emoji: '🔴', color: '#FF3B30' },
+  booked:     { label: 'Booked',      emoji: '🟢', color: '#34C759' },
+  back:       { label: 'Come Back',   emoji: '🟠', color: '#FF9500' },
+  neverknock: { label: 'Never Knock', emoji: '🚫', color: '#8B0000' },
 };
 
-let map, pins = [], appointments = [], currentMode = 'na', pendingPin = null;
+let map, pins = [], jobs = [], currentMode = 'na';
+let jobsViewDate = new Date().toISOString().split('T')[0];
+let editingJobId = null;
+let bookingLat = null, bookingLng = null;
+window._statsSelectedDate = new Date().toISOString().split('T')[0];
+window._statsAllTime = false;
 
-// ── INIT MAP ──
+// ── MAP INIT ──
 function initMap() {
-  map = L.map('map', { zoomControl: true }).setView([45.5017, -73.5673], 13);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '©OSM ©Carto', maxZoom: 19
+  map = L.map('map', { zoomControl: true }).setView([45.5017, -73.5673], 16);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri', maxZoom: 20
   }).addTo(map);
   map.on('click', onMapClick);
+  navigator.geolocation.getCurrentPosition(pos => {
+    map.setView([pos.coords.latitude, pos.coords.longitude], 18);
+  }, () => {});
   loadPins();
-  loadAppointments();
+  loadJobs();
+  updateJobsDateLabel();
 }
 
 function makeIcon(status) {
-  const s = STATUS[status];
+  const s = STATUS[status] || STATUS.na;
   return L.divIcon({
-    html: `<div style="
-      width:32px;height:32px;border-radius:50%;
-      background:${s.color};color:#fff;
-      display:flex;align-items:center;justify-content:center;
-      font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.25);
-      border:2px solid #fff;
-    ">${s.emoji}</div>`,
+    html: '<div style="width:32px;height:32px;border-radius:50%;background:' + s.color + ';color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.35);border:2px solid #fff;">' + s.emoji + '</div>',
     className: '', iconSize: [32,32], iconAnchor: [16,16], popupAnchor: [0,-18]
   });
 }
 
-function onMapClick(e) {
-  const { lat, lng } = e.latlng;
-  addPin(lat, lng, currentMode);
-}
+function onMapClick(e) { addPin(e.latlng.lat, e.latlng.lng, currentMode); }
 
-async function addPin(lat, lng, status, note='') {
+async function addPin(lat, lng, status, note) {
+  note = note || '';
   const { data, error } = await sb.from('pins').insert({ lat, lng, status, note }).select().single();
   if (error) { showToast('Error saving pin'); return; }
   pins.push(data);
   renderMarker(data);
   updateHeader();
-  renderPinsList();
   renderStats();
   showToast(STATUS[status].emoji + ' ' + STATUS[status].label);
   if (status === 'booked') openBookModal(lat, lng);
@@ -472,32 +310,26 @@ async function addPin(lat, lng, status, note='') {
 function renderMarker(pin) {
   const marker = L.marker([pin.lat, pin.lng], { icon: makeIcon(pin.status) }).addTo(map);
   marker.pinId = pin.id;
-  marker.on('click', () => showPinPopup(pin, marker));
+  marker.on('click', function() { showPinPopup(pin, marker); });
   pin._marker = marker;
 }
 
 function showPinPopup(pin, marker) {
-  const addr = `${pin.lat.toFixed(5)}, ${pin.lng.toFixed(5)}`;
-  const btns = Object.entries(STATUS).map(([k,v]) =>
-    `<button class="popup-btn ${k}" onclick="changeStatus('${pin.id}','${k}')">${v.emoji} ${v.label}</button>`
-  ).join('');
-  const content = `
-    <div class="popup-inner">
-      <div class="popup-addr">📍 ${addr}</div>
-      <div class="popup-btns">${btns}</div>
-      <button class="popup-del" onclick="deletePin('${pin.id}')">🗑 Remove Pin</button>
-    </div>`;
-  marker.bindPopup(content, { minWidth: 220 }).openPopup();
+  const addr = pin.lat.toFixed(5) + ', ' + pin.lng.toFixed(5);
+  const btns = Object.entries(STATUS).map(function(e) {
+    return '<button class="popup-btn ' + e[0] + '" onclick="changeStatus(\'' + pin.id + '\',\'' + e[0] + '\')">' + e[1].emoji + ' ' + e[1].label + '</button>';
+  }).join('');
+  const content = '<div class="popup-inner"><div class="popup-addr">📍 ' + addr + '</div><div class="popup-btns">' + btns + '</div><button class="popup-del" onclick="deletePin(\'' + pin.id + '\')">🗑 Remove Pin</button></div>';
+  marker.bindPopup(content, { minWidth: 240 }).openPopup();
 }
 
 async function changeStatus(id, status) {
-  await sb.from('pins').update({ status }).eq('id', id);
-  const pin = pins.find(p => p.id === id);
+  await sb.from('pins').update({ status: status }).eq('id', id);
+  const pin = pins.find(function(p) { return p.id === id; });
   if (pin) {
     pin.status = status;
     pin._marker.setIcon(makeIcon(status));
     map.closePopup();
-    renderPinsList();
     renderStats();
     showToast('Updated to ' + STATUS[status].label);
     if (status === 'booked') openBookModal(pin.lat, pin.lng);
@@ -506,12 +338,11 @@ async function changeStatus(id, status) {
 
 async function deletePin(id) {
   await sb.from('pins').delete().eq('id', id);
-  const idx = pins.findIndex(p => p.id === id);
+  const idx = pins.findIndex(function(p) { return p.id === id; });
   if (idx !== -1) {
     pins[idx]._marker.remove();
     pins.splice(idx, 1);
     map.closePopup();
-    renderPinsList();
     renderStats();
     updateHeader();
     showToast('Pin removed');
@@ -519,140 +350,194 @@ async function deletePin(id) {
 }
 
 async function loadPins() {
-  const { data } = await sb.from('pins').select('*').order('created_at', { ascending: false });
-  if (data) {
-    pins = data;
+  const result = await sb.from('pins').select('*').order('created_at', { ascending: false });
+  if (result.data) {
+    pins = result.data;
     pins.forEach(renderMarker);
     updateHeader();
-    renderPinsList();
     renderStats();
   }
 }
 
-// ── MODE ──
 function setMode(mode) {
   currentMode = mode;
-  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector(`.mode-btn[data-mode="${mode}"]`).classList.add('active');
+  document.querySelectorAll('.mode-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelector('.mode-btn[data-mode="' + mode + '"]').classList.add('active');
 }
 
-// ── LOCATE ──
 function locateMe() {
-  navigator.geolocation.getCurrentPosition(pos => {
-    map.setView([pos.coords.latitude, pos.coords.longitude], 16);
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    map.setView([pos.coords.latitude, pos.coords.longitude], 18);
     showToast('📍 Located');
-  }, () => showToast('Location unavailable'));
-}
-
-// ── PINS LIST ──
-function renderPinsList() {
-  const el = document.getElementById('pins-list');
-  if (!pins.length) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📍</div><div class="empty-title">No pins yet</div><div class="empty-sub">Tap the map to drop your first pin</div></div>`;
-    return;
-  }
-  const groups = { booked: [], back: [], na: [], no: [] };
-  pins.forEach(p => groups[p.status]?.push(p));
-  let html = '';
-  const order = ['booked', 'back', 'na', 'no'];
-  order.forEach(s => {
-    if (!groups[s].length) return;
-    html += `<div class="section-label">${STATUS[s].emoji} ${STATUS[s].label} (${groups[s].length})</div>`;
-    groups[s].forEach(p => {
-      const time = new Date(p.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-      html += `
-        <div class="pin-card">
-          <div class="pin-row">
-            <div class="pin-icon ${p.status}">${STATUS[p.status].emoji}</div>
-            <div class="pin-info">
-              <div class="pin-title">${p.lat.toFixed(4)}, ${p.lng.toFixed(4)}</div>
-              <div class="pin-meta">${time}</div>
-            </div>
-            <span class="pin-badge ${p.status}">${STATUS[p.status].label}</span>
-            <button class="pin-delete" onclick="deletePin('${p.id}')">×</button>
-          </div>
-          ${p.note ? `<div class="pin-note">${p.note}</div>` : ''}
-        </div>`;
-    });
-  });
-  el.innerHTML = html;
+  }, function() { showToast('Location unavailable'); });
 }
 
 // ── STATS ──
 function renderStats() {
-  const total = pins.length;
-  const counts = { na: 0, no: 0, booked: 0, back: 0 };
-  pins.forEach(p => counts[p.status]++);
-  const rate = total ? Math.round((counts.booked / total) * 100) : 0;
   const el = document.getElementById('stats-content');
-  el.innerHTML = `
-    <div class="stat-grid">
-      <div class="stat-card blue"><div class="stat-num">${total}</div><div class="stat-label">Total Doors</div></div>
-      <div class="stat-card green"><div class="stat-num">${counts.booked}</div><div class="stat-label">Booked</div></div>
-      <div class="stat-card orange"><div class="stat-num">${counts.back}</div><div class="stat-label">Come Back</div></div>
-      <div class="stat-card red"><div class="stat-num">${counts.no}</div><div class="stat-label">Not Int.</div></div>
-    </div>
-    <div class="rate-card">
-      <div class="rate-title">Conversion Breakdown</div>
-      ${Object.entries(counts).map(([s,c]) => `
-        <div class="rate-bar-wrap">
-          <div class="rate-bar-label"><span>${STATUS[s].emoji} ${STATUS[s].label}</span><span>${total ? Math.round(c/total*100) : 0}% (${c})</span></div>
-          <div class="rate-bar-track"><div class="rate-bar-fill ${s === 'na' ? 'blue' : s === 'no' ? 'red' : s === 'booked' ? 'green' : 'orange'}" style="width:${total ? c/total*100 : 0}%"></div></div>
-        </div>`).join('')}
-    </div>
-    <button class="reset-btn" onclick="confirmReset()">🗑 Clear All Pins</button>
-  `;
+  const today = new Date().toISOString().split('T')[0];
+  const pinsByDate = {};
+  pins.forEach(function(p) {
+    const d = p.created_at ? p.created_at.split('T')[0] : null;
+    if (d) { if (!pinsByDate[d]) pinsByDate[d] = []; pinsByDate[d].push(p); }
+  });
+  const selectedDate = window._statsSelectedDate || today;
+  const selectedPins = pinsByDate[selectedDate] || [];
+  const total = selectedPins.length;
+  const counts = { na: 0, no: 0, booked: 0, back: 0 };
+  selectedPins.forEach(function(p) { if (counts[p.status] !== undefined) counts[p.status]++; });
+  const answered = total - counts.na;
+  const answerRate = total ? Math.round(answered / total * 100) : 0;
+  const closeRate = answered ? Math.round(counts.booked / answered * 100) : 0;
+  const allTotal = pins.length;
+  const allCounts = { na: 0, no: 0, booked: 0, back: 0 };
+  pins.forEach(function(p) { if (allCounts[p.status] !== undefined) allCounts[p.status]++; });
+  const allAnswered = allTotal - allCounts.na;
+  const allCloseRate = allAnswered ? Math.round(allCounts.booked / allAnswered * 100) : 0;
+  const isToday = selectedDate === today;
+  const selLabel = isToday ? 'Today' : new Date(selectedDate + 'T12:00').toLocaleDateString('en-CA', { month: 'short', day: 'numeric' });
+
+  const barColors = { na: 'blue', no: 'red', booked: 'green', back: 'orange' };
+
+  let dayHtml = '<div class="stat-grid">' +
+    '<div class="stat-card blue"><div class="stat-num">' + total + '</div><div class="stat-label">Doors Knocked</div></div>' +
+    '<div class="stat-card green"><div class="stat-num">' + counts.booked + '</div><div class="stat-label">Closed</div></div>' +
+    '<div class="stat-card orange"><div class="stat-num">' + answerRate + '%</div><div class="stat-label">Answer Rate</div></div>' +
+    '<div class="stat-card red"><div class="stat-num">' + closeRate + '%</div><div class="stat-label">Close Rate</div></div>' +
+    '</div><div class="rate-card"><div class="rate-title">Breakdown</div>' +
+    Object.entries(counts).map(function(e) {
+      const s = e[0], c = e[1];
+      return '<div class="rate-bar-wrap"><div class="rate-bar-label"><span>' + STATUS[s].emoji + ' ' + STATUS[s].label + '</span><span>' + (total ? Math.round(c/total*100) : 0) + '% (' + c + ')</span></div><div class="rate-bar-track"><div class="rate-bar-fill ' + barColors[s] + '" style="width:' + (total ? c/total*100 : 0) + '%"></div></div></div>';
+    }).join('') + '</div>';
+
+  let allHtml = '<div class="stat-grid">' +
+    '<div class="stat-card blue"><div class="stat-num">' + allTotal + '</div><div class="stat-label">Total Doors</div></div>' +
+    '<div class="stat-card green"><div class="stat-num">' + allCounts.booked + '</div><div class="stat-label">Total Closed</div></div>' +
+    '<div class="stat-card orange"><div class="stat-num">' + (allTotal ? Math.round((allTotal-allCounts.na)/allTotal*100) : 0) + '%</div><div class="stat-label">Avg Answer Rate</div></div>' +
+    '<div class="stat-card red"><div class="stat-num">' + allCloseRate + '%</div><div class="stat-label">Avg Close Rate</div></div>' +
+    '</div><div class="rate-card"><div class="rate-title">All-Time Breakdown</div>' +
+    Object.entries(allCounts).map(function(e) {
+      const s = e[0], c = e[1];
+      return '<div class="rate-bar-wrap"><div class="rate-bar-label"><span>' + STATUS[s].emoji + ' ' + STATUS[s].label + '</span><span>' + (allTotal ? Math.round(c/allTotal*100) : 0) + '% (' + c + ')</span></div><div class="rate-bar-track"><div class="rate-bar-fill ' + barColors[s] + '" style="width:' + (allTotal ? c/allTotal*100 : 0) + '%"></div></div></div>';
+    }).join('') + '</div>';
+
+  el.innerHTML = '<div class="stats-tab-bar">' +
+    '<button class="stats-tab ' + (!window._statsAllTime ? 'active' : '') + '" onclick="setStatsTab(false)">📅 ' + selLabel + '</button>' +
+    '<button class="stats-tab ' + (window._statsAllTime ? 'active' : '') + '" onclick="setStatsTab(true)">📊 All Time</button>' +
+    '</div>' +
+    (window._statsAllTime ? allHtml : dayHtml) +
+    renderCalendar(pinsByDate, selectedDate) +
+    '<button class="reset-btn" onclick="confirmReset()">🗑 Clear All Pins</button>';
 }
 
-async function confirmReset() {
-  if (!confirm('Clear all pins? This cannot be undone.')) return;
-  await sb.from('pins').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-  pins.forEach(p => p._marker?.remove());
-  pins = [];
-  updateHeader(); renderPinsList(); renderStats();
-  showToast('All pins cleared');
+function setStatsTab(allTime) { window._statsAllTime = allTime; renderStats(); }
+
+function renderCalendar(pinsByDate, selectedDate) {
+  const base = window._calDate ? new Date(window._calDate + '-01') : new Date();
+  const year = base.getFullYear(), month = base.getMonth();
+  const today = new Date().toISOString().split('T')[0];
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const monthLabel = new Date(year, month).toLocaleDateString('en-CA', { month: 'long', year: 'numeric' });
+  let cells = '';
+  for (let i=0; i<firstDay; i++) cells += '<div class="cal-day empty"></div>';
+  for (let d=1; d<=daysInMonth; d++) {
+    const ds = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    const isToday = ds === today, isSel = ds === selectedDate, hasData = (pinsByDate[ds]||[]).length > 0;
+    cells += '<div class="cal-day ' + (isToday?'today ':'') + (isSel?'selected ':'') + (hasData?'has-data':'') + '" onclick="selectCalDate(\'' + ds + '\')">' + d + '<span class="cal-dot"></span></div>';
+  }
+  return '<div class="cal-card"><div class="cal-header"><button class="cal-nav" onclick="shiftCal(-1)">‹</button><div class="cal-title">' + monthLabel + '</div><button class="cal-nav" onclick="shiftCal(1)">›</button></div><div class="cal-grid">' + ['Su','Mo','Tu','We','Th','Fr','Sa'].map(function(d) { return '<div class="cal-dow">'+d+'</div>'; }).join('') + cells + '</div></div>';
 }
 
-// ── SCHEDULE ──
-async function loadAppointments() {
-  const { data } = await sb.from('appointments').select('*').order('date').order('time');
-  if (data) { appointments = data; renderSchedule(); }
+function shiftCal(dir) {
+  const base = window._calDate ? new Date(window._calDate + '-01') : new Date();
+  base.setMonth(base.getMonth() + dir);
+  window._calDate = base.getFullYear() + '-' + String(base.getMonth()+1).padStart(2,'0');
+  renderStats();
 }
 
-function renderSchedule() {
+function selectCalDate(ds) { window._statsSelectedDate = ds; window._statsAllTime = false; renderStats(); }
+
+// ── JOBS ──
+async function loadJobs() {
+  const result = await sb.from('appointments').select('*').order('date').order('time');
+  if (result.data) { jobs = result.data; renderJobsTimeline(); }
+}
+
+function updateJobsDateLabel() {
+  const today = new Date().toISOString().split('T')[0];
+  const d = new Date(jobsViewDate + 'T12:00');
+  document.getElementById('jobs-date-label').textContent = jobsViewDate === today ? 'Today' : d.toLocaleDateString('en-CA', { weekday: 'long' });
+  document.getElementById('jobs-date-sub').textContent = d.toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function shiftJobsDate(dir) {
+  const d = new Date(jobsViewDate + 'T12:00');
+  d.setDate(d.getDate() + dir);
+  jobsViewDate = d.toISOString().split('T')[0];
+  updateJobsDateLabel();
+  renderJobsTimeline();
+}
+
+function renderJobsTimeline() {
   const el = document.getElementById('sched-list');
-  if (!appointments.length) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">No appointments</div><div class="empty-sub">Book a door from the map</div></div>`;
+  const dayJobs = jobs.filter(function(j) { return j.date === jobsViewDate; }).sort(function(a,b) { return a.time.localeCompare(b.time); });
+  if (!dayJobs.length) {
+    el.innerHTML = '<div class="empty-state" style="padding:40px 20px"><div class="empty-icon">📋</div><div class="empty-title">No jobs today</div><div class="empty-sub">Tap + Job to add one</div></div>';
     return;
   }
-  el.innerHTML = appointments.map(a => {
-    const [h, m] = a.time.split(':');
-    const hr = parseInt(h);
-    const ampm = hr >= 12 ? 'PM' : 'AM';
-    const disp = `${hr > 12 ? hr-12 : hr || 12}:${m}`;
-    return `
-      <div class="appt-card">
-        <div class="appt-time-block"><div class="appt-time">${disp}</div><div class="appt-ampm">${ampm}</div></div>
-        <div class="appt-info">
-          <div class="appt-address">${a.address}</div>
-          <div class="appt-date">${new Date(a.date+'T12:00').toLocaleDateString('en-CA',{weekday:'long',month:'long',day:'numeric'})}</div>
-          ${a.notes ? `<div class="appt-note">${a.notes}</div>` : ''}
-        </div>
-        <button class="appt-delete" onclick="deleteAppt('${a.id}')">×</button>
-      </div>`;
-  }).join('');
+  let html = '';
+  const hours = [7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+  hours.forEach(function(h) {
+    const hStr = String(h).padStart(2,'0');
+    const slotJobs = dayJobs.filter(function(j) { return j.time && j.time.startsWith(hStr + ':'); });
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const displayH = h > 12 ? h - 12 : h;
+    const timeLabel = displayH + ampm;
+    if (slotJobs.length) {
+      slotJobs.forEach(function(j) {
+        const jh = parseInt(j.time.split(':')[0]);
+        const jm = j.time.split(':')[1];
+        const jampm = jh >= 12 ? 'PM' : 'AM';
+        const jdisp = (jh > 12 ? jh-12 : jh||12) + ':' + jm + ' ' + jampm;
+        const done = j.completed;
+        html += '<div class="timeline-slot"><div class="timeline-time">' + timeLabel + '</div><div class="timeline-dot has-job ' + (done?'completed':'') + '"></div><div class="job-block ' + (done?'completed-job':'') + '"><div class="job-block-name">' + (j.name||j.address) + '</div><div class="job-block-meta">📍 ' + j.address + '</div>' + (j.phone ? '<div class="job-block-meta">📞 ' + j.phone + '</div>' : '') + (j.notes ? '<div class="job-block-meta" style="font-style:italic">' + j.notes + '</div>' : '') + (j.price ? '<div class="job-block-price">$' + j.price + '</div>' : '') + '<div class="job-block-actions"><button class="job-complete-btn ' + (done?'done':'') + '" onclick="toggleComplete(\'' + j.id + '\')">' + (done ? '✅ Done' : '✓ Mark Complete') + '</button><button class="job-edit-btn" onclick="openJobModal(\'' + j.id + '\')">Edit</button><button class="job-del-btn" onclick="deleteJob(\'' + j.id + '\')">✕</button></div></div></div>';
+      });
+    } else if (h % 3 === 0) {
+      html += '<div class="timeline-slot"><div class="timeline-time">' + timeLabel + '</div><div class="timeline-dot"></div><div class="empty-slot"></div></div>';
+    }
+  });
+  el.innerHTML = html;
 }
 
-let bookingLat = null, bookingLng = null;
+async function toggleComplete(id) {
+  const job = jobs.find(function(j) { return j.id === id; });
+  if (!job) return;
+  const newVal = !job.completed;
+  await sb.from('appointments').update({ completed: newVal }).eq('id', id);
+  job.completed = newVal;
+  renderJobsTimeline();
+  showToast(newVal ? '✅ Job completed!' : 'Marked incomplete');
+}
+
+async function deleteJob(id) {
+  if (!confirm('Delete this job?')) return;
+  await sb.from('appointments').delete().eq('id', id);
+  jobs = jobs.filter(function(j) { return j.id !== id; });
+  renderJobsTimeline();
+  showToast('Job deleted');
+}
+
 function openBookModal(lat, lng) {
   bookingLat = lat; bookingLng = lng;
   document.getElementById('bk-date').value = new Date().toISOString().split('T')[0];
   document.getElementById('bk-time').value = '10:00';
-  document.getElementById('bk-address').value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+  document.getElementById('bk-address').value = lat.toFixed(4) + ', ' + lng.toFixed(4);
   document.getElementById('bk-notes').value = '';
   document.getElementById('book-modal').classList.add('open');
 }
-function closeModal() { document.getElementById('book-modal').classList.remove('open'); }
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
 async function saveBooking() {
   const address = document.getElementById('bk-address').value.trim();
@@ -660,72 +545,42 @@ async function saveBooking() {
   const time = document.getElementById('bk-time').value;
   const notes = document.getElementById('bk-notes').value.trim();
   if (!address || !date || !time) { showToast('Fill in all fields'); return; }
-  const { data } = await sb.from('appointments').insert({ address, date, time, notes }).select().single();
-  if (data) { appointments.push(data); renderSchedule(); closeModal(); showToast('✅ Appointment saved'); }
+  const result = await sb.from('appointments').insert({ address: address, date: date, time: time, notes: notes }).select().single();
+  if (result.data) {
+    jobs.push(result.data);
+    renderJobsTimeline();
+    closeModal('book-modal');
+    showToast('✅ Job booked');
+  }
 }
 
-async function deleteAppt(id) {
-  await sb.from('appointments').delete().eq('id', id);
-  appointments = appointments.filter(a => a.id !== id);
-  renderSchedule();
-  showToast('Appointment removed');
-}
-
-// ── NAVIGATION ──
-function showView(name) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(name + '-view').classList.add('active');
-  document.querySelectorAll('.nav-btn')[['map','pins','stats','sched'].indexOf(name)].classList.add('active');
-  if (name === 'map') setTimeout(() => map.invalidateSize(), 50);
-}
-
-// ── HEADER ──
-function updateHeader() {
-  const today = new Date().toISOString().split('T')[0];
-  const todayCount = pins.filter(p => p.created_at?.startsWith(today)).length;
-  document.getElementById('hdr-count').textContent = todayCount;
-}
-
-// ── TOAST ──
-let toastTimer;
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
-}
-
-
-// ── JOBS ──
-let jobs = [];
-
-function openJobModal() {
-  document.getElementById('jb-name').value = '';
-  document.getElementById('jb-phone').value = '';
-  document.getElementById('jb-address').value = '';
-  document.getElementById('jb-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('jb-time').value = '09:00';
-  document.getElementById('jb-price').value = '';
-  document.getElementById('jb-notes').value = '';
-  document.getElementById('jb-photo-preview').style.display = 'none';
-  document.getElementById('jb-photo-preview').src = '';
-  document.getElementById('jb-photo-input').value = '';
+function openJobModal(editId) {
+  editingJobId = editId || null;
+  const deleteBtn = document.getElementById('jb-delete-btn');
+  if (editId) {
+    const job = jobs.find(function(j) { return j.id === editId; });
+    if (!job) return;
+    document.getElementById('job-modal-title').textContent = 'Edit Job';
+    document.getElementById('jb-name').value = job.name || '';
+    document.getElementById('jb-phone').value = job.phone || '';
+    document.getElementById('jb-address').value = job.address || '';
+    document.getElementById('jb-date').value = job.date || '';
+    document.getElementById('jb-time').value = job.time || '09:00';
+    document.getElementById('jb-price').value = job.price || '';
+    document.getElementById('jb-notes').value = job.notes || '';
+    deleteBtn.style.display = 'block';
+  } else {
+    document.getElementById('job-modal-title').textContent = 'New Job';
+    document.getElementById('jb-name').value = '';
+    document.getElementById('jb-phone').value = '';
+    document.getElementById('jb-address').value = '';
+    document.getElementById('jb-date').value = jobsViewDate;
+    document.getElementById('jb-time').value = '09:00';
+    document.getElementById('jb-price').value = '';
+    document.getElementById('jb-notes').value = '';
+    deleteBtn.style.display = 'none';
+  }
   document.getElementById('job-modal').classList.add('open');
-}
-function closeJobModal() { document.getElementById('job-modal').classList.remove('open'); }
-
-function previewPhoto(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = document.getElementById('jb-photo-preview');
-    img.src = e.target.result;
-    img.style.display = 'block';
-    document.querySelector('.photo-upload').style.display = 'none';
-  };
-  reader.readAsDataURL(file);
 }
 
 async function saveJob() {
@@ -736,44 +591,69 @@ async function saveJob() {
   const time = document.getElementById('jb-time').value;
   const price = document.getElementById('jb-price').value;
   const notes = document.getElementById('jb-notes').value.trim();
-  const photoSrc = document.getElementById('jb-photo-preview').src;
-  if (!name || !address || !date) { showToast('Fill in name, address and date'); return; }
-  const job = { name, phone, address, date, time, price, notes, photo: photoSrc && photoSrc !== window.location.href ? photoSrc : null, created_at: new Date().toISOString() };
-  jobs.unshift(job);
-  renderJobs();
-  closeJobModal();
-  showToast('Job saved');
-}
-
-function renderJobs() {
-  const el = document.getElementById('sched-list');
-  if (!jobs.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No jobs yet</div><div class="empty-sub">Tap Add Job to log your first booking</div></div>';
-    return;
+  if (!address || !date) { showToast('Fill in address and date'); return; }
+  if (editingJobId) {
+    const result = await sb.from('appointments').update({ name: name, phone: phone, address: address, date: date, time: time, price: price, notes: notes }).eq('id', editingJobId).select().single();
+    if (result.data) {
+      const idx = jobs.findIndex(function(j) { return j.id === editingJobId; });
+      if (idx !== -1) jobs[idx] = Object.assign({}, jobs[idx], result.data);
+      renderJobsTimeline();
+      closeModal('job-modal');
+      showToast('Job updated');
+    }
+  } else {
+    const result = await sb.from('appointments').insert({ name: name, phone: phone, address: address, date: date, time: time, price: price, notes: notes }).select().single();
+    if (result.data) {
+      jobs.push(result.data);
+      renderJobsTimeline();
+      closeModal('job-modal');
+      showToast('Job saved');
+    }
   }
-  el.innerHTML = jobs.map((j, i) => {
-    const [h, m] = j.time ? j.time.split(':') : ['9','00'];
-    const hr = parseInt(h);
-    const ampm = hr >= 12 ? 'PM' : 'AM';
-    const disp = (hr > 12 ? hr-12 : hr || 12) + ':' + m;
-    const dateStr = new Date(j.date + 'T12:00').toLocaleDateString('en-CA', {weekday:'short', month:'short', day:'numeric'});
-    return `<div class="job-card" style="margin-bottom:10px">
-      ${j.photo ? `<img class="job-photo" src="${j.photo}"/>` : '<div class="job-photo-placeholder">🏠</div>'}
-      <div class="job-body">
-        <div class="job-row">
-          <div class="job-name">${j.name}</div>
-          ${j.price ? `<div class="job-date-badge">\$${j.price}</div>` : ''}
-        </div>
-        <div class="job-meta">${j.address}</div>
-        ${j.phone ? `<div class="job-meta">📞 ${j.phone}</div>` : ''}
-        <div class="job-meta" style="margin-top:6px">📅 ${dateStr} at ${disp} ${ampm}</div>
-        ${j.notes ? `<div class="job-meta" style="margin-top:4px;font-style:italic">${j.notes}</div>` : ''}
-      </div>
-    </div>`;
-  }).join('');
 }
 
-// ── START ──
+async function deleteCurrentJob() {
+  if (!editingJobId) return;
+  if (!confirm('Delete this job?')) return;
+  await sb.from('appointments').delete().eq('id', editingJobId);
+  jobs = jobs.filter(function(j) { return j.id !== editingJobId; });
+  renderJobsTimeline();
+  closeModal('job-modal');
+  showToast('Job deleted');
+}
+
+function showView(name) {
+  document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active'); });
+  document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById(name + '-view').classList.add('active');
+  var idx = ['map','stats','sched'].indexOf(name);
+  document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  if (name === 'map') setTimeout(function() { map.invalidateSize(); }, 50);
+  if (name === 'stats') renderStats();
+}
+
+function updateHeader() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('hdr-count').textContent = pins.filter(function(p) { return p.created_at && p.created_at.startsWith(today); }).length;
+}
+
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2000);
+}
+
+async function confirmReset() {
+  if (!confirm('Clear all pins? Cannot be undone.')) return;
+  await sb.from('pins').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  pins.forEach(function(p) { if (p._marker) p._marker.remove(); });
+  pins = [];
+  updateHeader(); renderStats();
+  showToast('All pins cleared');
+}
+
 window.addEventListener('load', initMap);
 </script>
 </body>
