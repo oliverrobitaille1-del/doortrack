@@ -277,9 +277,6 @@ function initMap() {
     attribution: 'Tiles &copy; Esri', maxZoom: 20
   }).addTo(map);
   map.on('click', onMapClick);
-  navigator.geolocation.getCurrentPosition(pos => {
-    map.setView([pos.coords.latitude, pos.coords.longitude], 18);
-  }, () => {});
   loadPins();
   loadJobs();
   updateJobsDateLabel();
